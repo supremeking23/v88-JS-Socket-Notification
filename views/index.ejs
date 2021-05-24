@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<!-- Required meta tags -->
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+		<!--Import Google Icon Font-->
+		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+		<!-- Compiled and minified CSS -->
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" />
+
+		<style>
+			.mt-2 {
+				margin-top: 2rem;
+			}
+
+			.p-2 {
+				padding: 2rem !important;
+			}
+
+			form {
+				padding: 1rem;
+			}
+
+			form button[type="submit"] {
+				color: #fff;
+			}
+
+			.user-list {
+				padding: 1rem;
+				max-height: 270px;
+				/* overflow-y: scroll; */
+				overflow: auto;
+			}
+
+			h3 {
+				border-bottom: 1px solid #000;
+				padding-bottom: 1rem;
+			}
+		</style>
+
+		<!-- Compiled and minified JavaScript -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+		<script
+			src="https://cdn.socket.io/3.1.3/socket.io.min.js"
+			integrity="sha384-cPwlPLvBTa3sKAgddT6krw0cJat7egBga3DJepJyrLl4Q9/5WLra3rrnMcyTyOnh"
+			crossorigin="anonymous"
+		></script>
+
+		<script type="text/javascript">
+			$(document).ready(function () {
+				let modal = $(".modal").modal();
+				let chat_section = document.querySelector(".chat-section");
+				modal.modal("open");
+
+				const SOCKET = io();
+
+				SOCKET.on("other_user_connection", function (data) {
+					M.toast({ html: `${data.msg}`, classes: `teal darken-4` });
+				});
+
+				SOCKET.on("other_user_disconnected", function (data) {
+					console.log(data.msg);
+					M.toast({ html: `${data.msg}`, classes: ` red accent-4` });
+				});
+
+				// SOCKET.emit("new_connection", { msg: "this user is now connected" });
+				// SOCKET.broadcast.emit("new_connection", { msg: "other user should see this" });
+
+				$(".add-user-to-chat-room").submit(function () {
+					$.post($(this).attr("action"), $(this).serialize(), function (res) {}, "json");
+					return false;
+				});
+
+				$(".notify-everyone").click(function () {
+					SOCKET.emit("notify");
+				});
+
+				SOCKET.on("trigger-button", function (data) {
+					M.toast({ html: `${data.msg}`, classes: ` red accent-4` });
+				});
+			});
+		</script>
+
+		<title>Notification</title>
+	</head>
+	<body>
+		<nav class="light-blue darken-4">
+			<div class="container">
+				<div class="nav-wrapper">
+					<a href="#" class="brand-logo">Notification</a>
+				</div>
+			</div>
+		</nav>
+
+		<div class="container">
+			<!-- <div class="row">
+				<div class="col s12">
+					<div id="modal1" class="modal">
+						<form action="add-user-to-chat-room" class="add-user-to-chat-room" method="POST">
+							<div class="modal-content">
+								<h4 class="">Please enter your name:</h4>
+								<div class="row">
+									<div class="input-field col s12">
+										<input id="name" type="text" name="name" />
+										<label for="name">Name</label>
+									</div>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button type="submit" class="modal-close waves-effect waves-green btn-flat light-blue darken-4">
+									Enter chatroom
+								</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col s5">
+					<h3>List of users</h3>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col s12 card">
+					<div class="user-list"></div>
+				</div>
+			</div> -->
+
+			<div class="row">
+				<div class="col s12">
+					<button type="button" class="notify-everyone">Notify Everyone</button>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
